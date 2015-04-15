@@ -41,12 +41,11 @@ public class RecordService {
         Dial dial = new Dial();
         dial.set("record", "record-from-answer");
         dial.setAction("send");
+        dial.setTimeout(120);
         Number recipientNumber = new Number(digits);
         recipientNumber.setUrl("confirm");
         dial.append(recipientNumber);
         twiml.append(dial);
-
-        twiml.append(new Say("The recipient did not pick up."));
 
         return Response.ok().entity(twiml.toXML()).build();
     }
