@@ -4,7 +4,7 @@ Phone call recorder based on the Twilio platform.
 The application enables to record and play back phone calls without a dedicated app. 
 
 ####Requirements  
-A [Twilio](http://www.twilio.com) account with a voice- and message-enabled phone number.
+A [Twilio](http://www.twilio.com) account with a voice- and messaging-enabled phone number.
 
 ####Example use case
 Let's say X wants to call Y and wants to record the call. X does not have a smartphone or (doesn't want to / can't) download a dedicated app for recording calls.
@@ -16,10 +16,14 @@ Let's say X wants to call Y and wants to record the call. X does not have a smar
 * If Y accepts the call and the call has ended, a text message with the URL of the recording is sent to X.
 * The recording can be played back by either:
   * Navigating to the URL directly
-  * Forwarding the text message to the message-enabled Twilio number. After sending the text message, the sender will recevie a call and the recording will be played back.
+  * Forwarding the text message to the messaging-enabled Twilio number. After sending the text message, the sender will recevie a call and the recording will be played back.
 
 
-####Building (Java 8 required)
+####Setup
 * Fill in the configuration parameters in [Config.java](https://github.com/teoreteetik/call-recorder/blob/master/src/main/java/ee/teoreteetik/call_recorder/Config.java).
-* Build the war using `gradlew war`.
+* Build the war using `gradlew war` (Java 8 required).
+* Point the Voice Request URL of the voice-enabled number to  
+`http://deployed-app-url/twilio/recordCall/receive` (HTTP POST)
+* Point the Messaging Request URL of the messaging-enabled number to  
+`http://deployed-app-url/twilio/callPlayback` (HTTP POST)
 
