@@ -1,0 +1,4 @@
+accountSid: ACxx
+authToken: secret
+voiceNumber: numeroUno
+smsNumber: numeroDos

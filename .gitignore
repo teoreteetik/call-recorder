@@ -9,3 +9,6 @@
 build/
 gradle/
 *.iml
+dependency-reduced-pom.xml
+config.yaml
+target

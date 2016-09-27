@@ -1,9 +1,9 @@
-package ee.teoreteetik.call_recorder.endpoint;
+package ee.teoreteetik.callRecorder.endpoint;
 
 import com.twilio.sdk.TwilioRestException;
 import com.twilio.sdk.verbs.*;
 import com.twilio.sdk.verbs.Number;
-import ee.teoreteetik.call_recorder.TwilioClient;
+import ee.teoreteetik.callRecorder.TwilioClient;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
@@ -16,6 +16,12 @@ import javax.ws.rs.core.Response;
 @Path("/recordCall")
 @Produces(MediaType.APPLICATION_XML)
 public class RecordService {
+
+    private final TwilioClient twilioClient;
+
+    public RecordService(TwilioClient twilioClient) {
+        this.twilioClient = twilioClient;
+    }
 
     @POST
     @Path("/receive")
@@ -88,7 +94,7 @@ public class RecordService {
                     twiml.append(new Say("The recipient declined the call."));
                 } else {
                     try {
-                        TwilioClient.getInstance().sendSms(recipientNumber, recordingUrl);
+                        twilioClient.sendSms(recipientNumber, recordingUrl);
                     } catch (TwilioRestException e) {
                         twiml.append(new Say("An internal error has occurred."));
                     }

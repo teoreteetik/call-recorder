@@ -1,9 +1,9 @@
-package ee.teoreteetik.call_recorder.endpoint;
+package ee.teoreteetik.callRecorder.endpoint;
 
 import com.twilio.sdk.TwilioRestException;
 import com.twilio.sdk.verbs.TwiMLException;
 import com.twilio.sdk.verbs.TwiMLResponse;
-import ee.teoreteetik.call_recorder.TwilioClient;
+import ee.teoreteetik.callRecorder.TwilioClient;
 import java.net.URISyntaxException;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
@@ -17,6 +17,12 @@ import org.apache.http.client.utils.URIBuilder;
 @Produces(MediaType.APPLICATION_XML)
 public class PlaybackService {
 
+    private final TwilioClient twilioClient;
+
+    public PlaybackService(TwilioClient twilioClient) {
+        this.twilioClient = twilioClient;
+    }
+
     @POST
     public Response playbackCall(@FormParam("From") String recipientNumber,
                                  @FormParam("Body") String smsBody) throws TwiMLException, TwilioRestException {
@@ -24,9 +30,9 @@ public class PlaybackService {
         TwiMLResponse twiml = new TwiMLResponse();
         try {
             String encodedPlaybackUrl = getEncodedPlaybackUrl(smsBody);
-            TwilioClient.getInstance().makeOutgoingCall(recipientNumber, encodedPlaybackUrl);
+            twilioClient.makeOutgoingCall(recipientNumber, encodedPlaybackUrl);
         } catch (URISyntaxException e) {
-            TwilioClient.getInstance().sendSms(recipientNumber, "Invalid recording url.");
+            twilioClient.sendSms(recipientNumber, "Invalid recording url.");
         }
         return Response.ok().entity(twiml.toXML()).build();
     }

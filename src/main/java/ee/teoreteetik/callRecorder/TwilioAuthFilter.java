@@ -1,20 +1,30 @@
-package ee.teoreteetik.call_recorder;
+package ee.teoreteetik.callRecorder;
 
-import static java.util.stream.Collectors.toMap;
 import com.twilio.sdk.TwilioUtils;
+
+import org.glassfish.jersey.server.ContainerRequest;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
-import org.glassfish.jersey.server.ContainerRequest;
+
+import static java.util.stream.Collectors.toMap;
 
 @Provider
 public class TwilioAuthFilter implements ContainerRequestFilter {
+
+    private final TwilioUtils twilioUtils;
+
+    public TwilioAuthFilter(String authToken) {
+        this.twilioUtils = new TwilioUtils(authToken);
+    }
 
     @Override
     public void filter(final ContainerRequestContext requestContext) throws IOException {
@@ -24,7 +34,7 @@ public class TwilioAuthFilter implements ContainerRequestFilter {
         String url = cr.getAbsolutePath().toString();
         String xTwilioSig = requestContext.getHeaderString("x-twilio-signature");
 
-        boolean isValid = new TwilioUtils(Config.AUTH_TOKEN).validateRequest(xTwilioSig, url, formParams);
+        boolean isValid = twilioUtils.validateRequest(xTwilioSig, url, formParams);
         if (!isValid) {
             throw new RuntimeException("Not authorized");
         }

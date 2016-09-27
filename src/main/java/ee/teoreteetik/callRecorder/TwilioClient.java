@@ -1,4 +1,4 @@
-package ee.teoreteetik.call_recorder;
+package ee.teoreteetik.callRecorder;
 
 import com.twilio.sdk.TwilioRestClient;
 import com.twilio.sdk.TwilioRestException;
@@ -14,16 +14,14 @@ import org.apache.http.message.BasicNameValuePair;
 
 public class TwilioClient {
 
-    private static final TwilioClient INSTANCE = new TwilioClient(Config.ACCOUNT_SID, Config.AUTH_TOKEN);
-
-    public static TwilioClient getInstance() {
-        return INSTANCE;
-    }
-
     private final TwilioRestClient restClient;
+    private final String voiceNumber;
+    private final String smsNumber;
 
-    private TwilioClient(String accountSid, String authToken) {
+    public TwilioClient(String accountSid, String authToken, String voiceNumber, String smsNumber) {
         restClient = new TwilioRestClient(accountSid, authToken);
+        this.voiceNumber = voiceNumber;
+        this.smsNumber = smsNumber;
     }
 
     public void makeOutgoingCall(String recipientNumber, String callbackUrl) throws TwilioRestException {
@@ -31,7 +29,7 @@ public class TwilioClient {
         CallFactory callFactory = mainAccount.getCallFactory();
         Map<String, String> callParams = new HashMap<>();
         callParams.put("To", recipientNumber);
-        callParams.put("From", Config.VOICE_NUMBER);
+        callParams.put("From", this.voiceNumber);
         callParams.put("Url", callbackUrl);
         callFactory.create(callParams);
     }
@@ -41,7 +39,7 @@ public class TwilioClient {
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("Body", msgBody));
         params.add(new BasicNameValuePair("To", recipientNumber));
-        params.add(new BasicNameValuePair("From", Config.SMS_NUMBER));
+        params.add(new BasicNameValuePair("From", this.smsNumber));
         messageFactory.create(params);
     }
 
