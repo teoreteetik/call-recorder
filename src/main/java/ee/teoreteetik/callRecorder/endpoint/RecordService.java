@@ -3,7 +3,7 @@ package ee.teoreteetik.callRecorder.endpoint;
 import com.twilio.sdk.TwilioRestException;
 import com.twilio.sdk.verbs.*;
 import com.twilio.sdk.verbs.Number;
-import ee.teoreteetik.callRecorder.TwilioClient;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
@@ -13,14 +13,22 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import ee.teoreteetik.callRecorder.TwilioClient;
+import ee.teoreteetik.callRecorder.catena.CatenaClient;
+import ee.teoreteetik.callRecorder.catena.CatenaSignature;
+
+import static java.lang.String.format;
+
 @Path("/recordCall")
 @Produces(MediaType.APPLICATION_XML)
 public class RecordService {
 
     private final TwilioClient twilioClient;
+    private final CatenaClient catenaClient;
 
-    public RecordService(TwilioClient twilioClient) {
+    public RecordService(TwilioClient twilioClient, CatenaClient catenaClient) {
         this.twilioClient = twilioClient;
+        this.catenaClient = catenaClient;
     }
 
     @POST
@@ -75,6 +83,7 @@ public class RecordService {
                                      @FormParam("From") String recipientNumber,
                                      @FormParam("DialCallDuration") int duration,
                                      @FormParam("DialCallStatus") String callStatus) throws TwiMLException {
+
         TwiMLResponse twiml = new TwiMLResponse();
 
         switch (callStatus) {
@@ -94,8 +103,11 @@ public class RecordService {
                     twiml.append(new Say("The recipient declined the call."));
                 } else {
                     try {
-                        twilioClient.sendSms(recipientNumber, recordingUrl);
-                    } catch (TwilioRestException e) {
+                        CatenaSignature catenaSignature = catenaClient.signFile(recordingUrl);
+                        String msgBody = format("timestamp: %s UTC, url: %s", catenaSignature.aggregationTime, recordingUrl);
+                        twilioClient.sendSms(recipientNumber, msgBody);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                         twiml.append(new Say("An internal error has occurred."));
                     }
                 }
@@ -103,5 +115,4 @@ public class RecordService {
         }
         return Response.ok().entity(twiml.toXML()).build();
     }
-
 }

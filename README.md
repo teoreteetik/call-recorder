@@ -20,10 +20,12 @@ Let's say X wants to call Y and wants to record the call. X does not have a smar
 
 
 ####Setup
-* Fill in the configuration parameters in [Config.java](https://github.com/teoreteetik/call-recorder/blob/master/src/main/java/ee/teoreteetik/call_recorder/Config.java).
-* Build the war using `gradlew war` (Java 8 required).
 * Point the Voice Request URL of the voice-enabled number to  
-`http://deployed-app-url/twilio/recordCall/receive` (HTTP POST)
+`http://deployed-app-url.com/recordCall/receive` (HTTP POST)
 * Point the Messaging Request URL of the messaging-enabled number to  
-`http://deployed-app-url/twilio/callPlayback` (HTTP POST)
-
+`http://deployed-app-url.com/callPlayback` (HTTP POST)
+* `cp config.sample.yaml config.yaml`
+* Fill in `config.yaml` with the necessary configuration parameters
+* `mvn clean package`
+* `java -jar target/call-recorder-0.0.1-SNAPSHOT.jar server config.yaml`
+* The server runs on port 8900 by default

@@ -1,4 +1,18 @@
-accountSid: ACxx
-authToken: secret
-voiceNumber: numeroUno
-smsNumber: numeroDos
+server:
+  applicationConnectors:
+  - type: http
+    port: 8900
+  adminConnectors:
+  - type: http
+    port: 8901
+
+twilio:
+  accountSid: ACXXX
+  authToken: secret
+  voiceNumber: '+372XXXXX'
+  smsNumber: '+372XXXXXXX'
+
+catena:
+  user: user
+  password: password
+  baseUrl: https://your-catena-url.com
